@@ -6,45 +6,33 @@
 //
 
 import SwiftUI
-import HealthKit
-
-let healthStore = HKHealthStore()
 
 struct ContentView: View {
+    @AppStorage("hasLaunchedBefore") var hasLaunchedBefore: Bool = false
+    
     var body: some View {
-        NavigationView {
-            VStack {
-                Text("Health App")
-                    .font(.largeTitle)
-                    .padding()
-            }
-            .onAppear {
-                requestHealthKitAuthorization()
-            }
-            .navigationTitle("Health Dashboard")
-        }
-    }
-    
-  
-    
-    
-    
-    
-    
-    
-    private func requestHealthKitAuthorization() {
-        let healthTypesToRead: Set = [
-            HKObjectType.quantityType(forIdentifier: .stepCount)!,
-            HKObjectType.quantityType(forIdentifier: .heartRate)!,
-            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
-        ]
-        
-        healthStore.requestAuthorization(toShare: nil, read: healthTypesToRead) { (success, error) in
-            if success {
-                print("Permisos concedidos para HealthKit")
+        VStack {
+            if !hasLaunchedBefore {
+                Button(action: {
+                    hasLaunchedBefore = true
+                }) {
+                    Text("Entrar a la app")
+                        .font(.largeTitle)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
             } else {
-                print("Permisos denegados: \(error?.localizedDescription ?? "")")
+                HealthPermissionView() // Vista para pedir permisos
             }
         }
+        .padding()
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
 }
